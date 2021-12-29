@@ -53,6 +53,17 @@ jobs:
           ${{ env.containerRegistry }}/${{ env.imageRepository }}:${{ env.tag }}
           ${{ env.containerRegistry }}/${{ env.imageRepository }}:latest
 
+    - name: Set Kubernetes Context
+      uses: azure/aks-set-context@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}' # Azure credentials
+        resource-group: '${{ env.resourceGroupName }}'
+        cluster-name: '${{ env.clusterName }}'
+
+    - name: Create ingress-demo namespace
+      run: |
+        kubectl create namespace ingress-demo --dry-run=client -o json | kubectl apply -f -
+
     - name: Create ACR credentials secret
       uses: azure/k8s-create-secret@v1
       with:
